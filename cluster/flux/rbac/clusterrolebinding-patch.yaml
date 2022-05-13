@@ -1,0 +1,16 @@
+# Delete the ClusterRoleBinding's; this allows
+# us to keep the upstream YAML files unmodified but still
+# not deploy the cluster-level permissions.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crd-controller
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-reconciler
+$patch: delete
+---

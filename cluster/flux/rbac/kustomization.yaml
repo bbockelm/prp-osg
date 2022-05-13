@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+# Verbatim from upstream flux2 sources
+# source: https://raw.githubusercontent.com/fluxcd/flux2/v0.30.2/manifests/rbac/controller.yaml
+- controller.yaml
+# source: https://raw.githubusercontent.com/fluxcd/flux2/v0.30.2/manifests/rbac/reconciler.yaml
+- reconciler.yaml
+# Create custom role bindings providing management capabilities *only* in the specific namespace.
+- rolebinding.yaml
+patchesStrategicmerge:
+  # Delete the ClusterRoleBinding 
+  - clusterrolebinding-patch.yaml

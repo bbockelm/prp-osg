@@ -1,0 +1,47 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: crd-controller
+  namespace: osg-services
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: crd-controller
+subjects:
+  - kind: ServiceAccount
+    name: kustomize-controller
+    namespace: osg-services
+  - kind: ServiceAccount
+    name: helm-controller
+    namespace: osg-services
+  - kind: ServiceAccount
+    name: source-controller
+    namespace: osg-services
+  - kind: ServiceAccount
+    name: notification-controller
+    namespace: osg-services
+  - kind: ServiceAccount
+    name: image-reflector-controller
+    namespace: osg-services
+  - kind: ServiceAccount
+    name: image-automation-controller
+    namespace: osg-services
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cluster-reconciler
+  namespace: osg-services
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: kustomize-controller
+    namespace: osg-services
+  - kind: ServiceAccount
+    name: helm-controller
+    namespace: osg-services
+---
