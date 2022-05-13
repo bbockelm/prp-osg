@@ -1,0 +1,149 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sealed-secrets-service-proxier
+  namespace: kube-system
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sealed-secrets-key-admin
+  namespace: kube-system
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sealed-secrets-controller
+$patch: delete
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sealed-secrets-controller
+  namespace: kube-system
+$patch: delete
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sealed-secrets-controller
+  namespace: kube-system
+$patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sealed-secrets-controller
+  namespace: kube-system
+$patch: delete
+---
+# From here on down are recreations of privilaged objects specific to the osg-services
+# namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-service-proxier
+  name: sealed-secrets-service-proxier
+  namespace: osg-services
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - sealed-secrets-controller
+  resources:
+  - services
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resourceNames:
+  - 'http:sealed-secrets-controller:'
+  - sealed-secrets-controller
+  resources:
+  - services/proxy
+  verbs:
+  - create
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-key-admin
+  name: sealed-secrets-key-admin
+  namespace: osg-services
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - list
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-controller
+  name: sealed-secrets-controller
+  namespace: osg-services
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-service-proxier
+  name: sealed-secrets-service-proxier
+  namespace: osg-services
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sealed-secrets-service-proxier
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:authenticated
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-controller
+  name: sealed-secrets-controller
+  namespace: osg-services
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sealed-secrets-key-admin
+subjects:
+- kind: ServiceAccount
+  name: sealed-secrets-controller
+  namespace: osg-services
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-controller
+  name: sealed-secrets-controller
+  namespace: osg-services
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: secrets-unsealer
+subjects:
+- kind: ServiceAccount
+  name: sealed-secrets-controller
+  namespace: osg-services
+---

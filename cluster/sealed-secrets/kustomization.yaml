@@ -1,0 +1,8 @@
+
+resources:
+# Downloaded from https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.17.5/controller.yaml
+# Unmodified
+- controller.yaml
+
+patchesStrategicMerge:
+- controller-patch.yaml
