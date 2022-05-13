@@ -1,0 +1,4 @@
+
+bases:
+- flux
+- sealed-secrets
